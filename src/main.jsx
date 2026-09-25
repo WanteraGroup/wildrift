@@ -342,7 +342,7 @@ function App() {
             {built && <div className="cols">
               <div className="panel">
                 <div className="panelTitle"><h2>RUNES</h2></div>
-                {build.runes.map(function(rune,index){return <div className="rune" key={rune}><div className="runeDot">{index+1}</div><b>{rune}</b></div>)}
+                {build.runes.map(function(rune,index){return <div className="rune" key={rune}><div className="runeDot">{index+1}</div><b>{rune}</b></div>})}
                 <div className="muted">SUMMONER: Flash + Ignite</div>
               </div>
               <div className="panel">

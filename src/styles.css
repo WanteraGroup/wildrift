@@ -1126,3 +1126,55 @@ button{transition:transform .18s ease,border-color .18s ease,background .18s eas
   .patchRail{grid-template-columns:1fr}
   .patchRail div{padding:7px 8px}
 }
+
+
+/* WR FORGE — OFFICIAL WILD RIFT VISUAL BACKDROP */
+.hero > .heroCard:first-child{
+  background-image:
+    linear-gradient(90deg,rgba(3,9,16,.96) 0%,rgba(3,11,18,.86) 38%,rgba(3,11,18,.48) 68%,rgba(3,9,16,.72) 100%),
+    url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/3705653167ef8f43acdc03fb2f0a469d5b3086fd-1920x1080.jpg");
+  background-size:cover;
+  background-position:center;
+  border-color:rgba(84,204,242,.28);
+  box-shadow:0 24px 60px rgba(0,0,0,.44),inset 0 0 80px rgba(0,0,0,.25),0 0 35px rgba(17,164,215,.07);
+}
+.hero > .heroCard:first-child:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  width:auto;
+  height:auto;
+  right:auto;
+  top:auto;
+  border-radius:inherit;
+  background:
+    linear-gradient(180deg,transparent 0%,rgba(2,8,14,.10) 48%,rgba(2,7,12,.64) 100%),
+    radial-gradient(circle at 78% 32%,rgba(60,213,255,.08),transparent 28%);
+  filter:none;
+  pointer-events:none;
+}
+.hero > .heroCard:first-child > *{
+  position:relative;
+  z-index:2;
+}
+.hero > .heroCard:first-child .heroScan{
+  z-index:3;
+  opacity:.65;
+}
+.riftAmbient:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 55%,rgba(0,190,255,.07),transparent 24%),
+    radial-gradient(circle at 84% 38%,rgba(80,96,255,.06),transparent 27%),
+    linear-gradient(115deg,transparent 0 48%,rgba(77,222,255,.025) 49% 50%,transparent 51%);
+  pointer-events:none;
+  animation:ambientPulse 9s ease-in-out infinite;
+}
+@keyframes ambientPulse{50%{opacity:.58;transform:scale(1.015)}100%{opacity:1;transform:scale(1)}}
+@media(max-width:760px){
+  .hero > .heroCard:first-child{
+    background-position:62% center;
+  }
+}

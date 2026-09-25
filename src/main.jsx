@@ -176,6 +176,7 @@ function App(){
   const [saved,setSaved]=useState(()=>readStore('wrforge-saved',[])),[matches,setMatches]=useState(()=>readStore('wrforge-matches',matchSeed))
   const [profile,setProfile]=useState(()=>readStore('wrforge-profile',{connected:false,region:'EU',riotId:'',rank:'Unranked',lastSync:null})),[level,setLevel]=useState(15),[targetArmor,setTargetArmor]=useState(100),[targetMR,setTargetMR]=useState(80)
   const [connectMsg,setConnectMsg]=useState(''),[riotMonitor,setRiotMonitor]=useState({status:'checking',account:null,monitor:null})
+  const [catalogSearch,setCatalogSearch]=useState(''),[selectedRune,setSelectedRune]=useState('Electrocute'),[selectedSpell,setSelectedSpell]=useState('FLASH'),[selectedCatalogItem,setSelectedCatalogItem]=useState('Luden’s Echo'),[selectedAbility,setSelectedAbility]=useState('P')
   useEffect(()=>{let active=true;fetch(championDataUrl).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{if(!active)return;const n=Array.isArray(data)?data.filter(c=>c.is_wr!==false).map(normalizeChampion):[];if(n.length){setLiveChampions(n);setDataStatus('live')}else setDataStatus('fallback')}).catch(()=>active&&setDataStatus('fallback'));return()=>{active=false}},[])
   useEffect(()=>{try{localStorage.setItem('wrforge-saved',JSON.stringify(saved))}catch{}},[saved])
   useEffect(()=>{try{localStorage.setItem('wrforge-matches',JSON.stringify(matches))}catch{}},[matches])
@@ -208,7 +209,7 @@ function App(){
   return <div className="app">
     <div className="riftAmbient" aria-hidden="true"><i/><i/><i/><span/></div>
     <header className="top"><div className="brand"><div className="brandmark">WR</div><div><b>WR FORGE</b><small>WILD RIFT BUILD & MATCH INTELLIGENCE</small></div></div><div className="actions"><div className="select">PATCH 7.3</div><button className="ghost" onClick={reset}>↻ Reset</button></div></header>
-    <nav className="nav"><button className={tab==='build'?'active':''} onClick={()=>setTab('build')}>⚔ BUILD FORGE</button><button className={tab==='matches'?'active':''} onClick={()=>setTab('matches')}>◈ MATCH MONITOR</button><button className={tab==='profile'?'active':''} onClick={()=>setTab('profile')}>◎ MY PROFILE</button><button className={tab==='learn'?'active':''} onClick={()=>setTab('learn')}>▣ LEARN & IMPROVE</button></nav>
+    <nav className="nav">{[['build','⚔ BUILD FORGE'],['champions','♙ CHAMPIONOK'],['runes','◈ RUNÁK'],['spells','✦ SPELLEK'],['items','◇ ITEMEK'],['matches','◈ MATCH MONITOR'],['learn','▣ TANULJ'],['profile','◎ PROFILOM']].map(([id,label])=><button key={id} className={tab===id?'active':''} onClick={()=>{setTab(id);setCatalogSearch('')}}>{label}</button>)}</nav>
     <main className="container">
       <section className="hero">
   <div className="heroCard">

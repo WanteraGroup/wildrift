@@ -1,20 +1,31 @@
 import crypto from 'node:crypto'
 
+const DEFAULT_ORIGIN='https://wild-rift-build-forge.vercel.app'
+
 export default function handler(req,res){
-  const clientId=process.env.RIOT_RSO_CLIENT_ID||process.env.VITE_RIOT_CLIENT_ID
-  const baseUrl=(process.env.RIOT_RSO_REDIRECT_URI||'').replace(/\\/api\\/riot\\/callback$/,'')
+  const clientId=process.env.RIOT_RSO_CLIENT_ID
+  const redirectUri=process.env.RIOT_RSO_REDIRECT_URI || DEFAULT_ORIGIN+'/api/riot/callback'
   if(!clientId){
-    return res.status(500).json({error:'RIOT_RSO_CLIENT_ID nincs beállítva a Vercel környezetben.'})
+    return res.status(500).json({ok:false,error:'RIOT_RSO_CLIENT_ID nincs beállítva a Vercel környezetben.'})
   }
-  const redirectUri=process.env.RIOT_RSO_REDIRECT_URI||((baseUrl||'https://wild-rift-build-forge.vercel.app')+'/api/riot/callback')
+  if(!/^https:\/\//.test(redirectUri)){
+    return res.status(500).json({ok:false,error:'RIOT_RSO_REDIRECT_URI érvénytelen.'})
+  }
   const state=crypto.randomBytes(32).toString('hex')
-  res.setHeader('Set-Cookie',`riot_oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`)
+  const cookie=[
+    'riot_oauth_state='+state,
+    'Path=/api/riot',
+    'HttpOnly',
+    'Secure',
+    'SameSite=Lax',
+    'Max-Age=600'
+  ].join('; ')
+  res.setHeader('Set-Cookie',cookie)
   const url=new URL('https://auth.riotgames.com/authorize')
   url.searchParams.set('client_id',clientId)
   url.searchParams.set('redirect_uri',redirectUri)
   url.searchParams.set('response_type','code')
   url.searchParams.set('scope','openid offline_access')
   url.searchParams.set('state',state)
-  res.writeHead(302,{Location:url.toString()})
-  res.end()
+  res.redirect(302,url.toString())
 }

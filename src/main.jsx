@@ -60,6 +60,38 @@ const runes = {
 const roles = ['All','Baron','Jungle','Mid','Dragon','Support']
 const playstyles = ['Burst','DPS','Tank','Safe','Utility']
 const championDataUrl = 'https://ry2x.github.io/WildRift-Merged-Champion-Data/data_en_US.json'
+const communityDragonBase = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default'
+const championIconIds = {
+  Ahri:103,Zed:238,'Lee Sin':64,Darius:122,Malphite:54,Jinx:222,Thresh:412,Lux:99,
+  Vayne:67,Morgana:25,Hwei:910,Sylas:517,'Rek’Sai':421,Yunara:166,'Cho’Gath':31,'Kai’Sa':145,'Xin Zhao':5
+}
+const itemIconIds = {
+  'Fiendhunter Bolts':2512,'Yun Tal Wildarrows':3036,'Infinity Edge':3031,'Mortal Reminder':3033,
+  'Guardian Angel':3026,'Gluttonous Greaves':3172,'Luden’s Echo':6655,'Infinity Orb':2158,
+  'Rabadon’s Deathcap':3089,'Void Staff':3135,'Zhonya’s Hourglass':3157,'Mana Boots':3175,
+  'Sunfire Aegis':3068,'Thornmail':3075,'Amaranth’s Twinguard':2362,'Force of Nature':4401,
+  'Randuin’s Omen':3143,'Plated Steelcaps':3047
+}
+const ddragonVersion = '15.18.1'
+
+function communityAsset(path) {
+  if (!path) return ''
+  if (path.indexOf('/lol-game-data/assets') === 0) {
+    return communityDragonBase + path.replace('/lol-game-data/assets','')
+  }
+  return path
+}
+
+function championImage(champion) {
+  return champion.imageUrl || (championIconIds[champion.name]
+    ? communityDragonBase + '/v1/champion-icons/' + championIconIds[champion.name] + '.png'
+    : '')
+}
+
+function itemImage(item) {
+  const id = itemIconIds[item]
+  return id ? communityDragonBase + '/assets/items/icons2d/' + id + '.png' : ''
+}
 
 function scoreItem(name, threats, playstyle) {
   const meta = itemMeta[name]
@@ -100,7 +132,8 @@ function normalizeChampion(raw, index) {
     difficulty:raw.difficult,
     damage:raw.damage,
     survive:raw.survive,
-    utility:raw.utility
+    utility:raw.utility,
+    imageUrl: communityAsset(raw.squarePortraitPath || raw.imagePath || '')
   }
 }
 
@@ -140,7 +173,8 @@ function App() {
 
   const roster = liveChampions.length ? liveChampions : champions
   const filtered = roster.filter(function(c){
-    return (role === 'All' || c.role === role) && c.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+    const needle = search.trim().toLowerCase()
+    return (role === 'All' || c.role === role) && (!needle || c.name.toLowerCase().indexOf(needle) >= 0)
   })
 
   useEffect(function(){
@@ -284,29 +318,36 @@ function App() {
               <input className="search" placeholder="Champion keresés..." value={search} onChange={function(e){setSearch(e.target.value)}}/>
             </div>
 
-            <div className="champGrid">{filtered.slice(0,18).map(function(c){
+            <div className="champGrid">{filtered.map(function(c){
               return (
                 <button key={c.id} className={'champ '+(mine.id === c.id ? 'active':'')} onClick={function(){setMine(c)}}>
-                  <div className="portrait" style={{'--c1':c.c1,'--c2':c.c2}}>{initials(c.name)}</div>
+                  <div className="portrait" style={{'--c1':c.c1,'--c2':c.c2}}>
+                    {championImage(c) ? <img src={championImage(c)} alt={c.name} loading="lazy" onError={function(e){e.currentTarget.style.display='none'}}/> : <span>{initials(c.name)}</span>}
+                  </div>
                   <span>{c.name}</span>
                 </button>
               )
-            })}</div>
+            })}
+            {!filtered.length && <div className="noResults">Nincs találat: <b>{search}</b></div>}</div>
 
             <div className="field">
               <div className="label">ENEMY TEAM <span className="muted">({enemies.length}/5)</span></div>
               <div className="enemyGrid">{[0,1,2,3,4].map(function(index){
                 const enemy = enemies[index]
                 return <div className={'enemySlot '+(enemy ? 'filled':'')} key={index} onClick={function(){ if(enemy) toggleEnemy(enemy) }}>
-                  {enemy ? <div><div className="portrait small" style={{'--c1':enemy.c1,'--c2':enemy.c2}}>{initials(enemy.name)}</div>{enemy.name}</div> : <span>+ enemy</span>}
+                  {enemy ? <div><div className="portrait small" style={{'--c1':enemy.c1,'--c2':enemy.c2}}>
+                    {championImage(enemy) ? <img src={championImage(enemy)} alt={enemy.name}/> : initials(enemy.name)}
+                  </div>{enemy.name}</div> : <span>+ enemy</span>}
                 </div>
               })}</div>
             </div>
 
             <div className="field">
               <div className="label">ADD / REMOVE ENEMY</div>
-              <div className="enemyPicker">{roster.filter(function(c){return c.id !== mine.id}).slice(0,12).map(function(c){
-                return <button key={c.id} className={'miniChamp '+(enemies.some(function(e){return e.id===c.id}) ? 'active':'')} onClick={function(){toggleEnemy(c)}}>{initials(c.name)}</button>
+              <div className="enemyPicker">{roster.filter(function(c){return c.id !== mine.id}).map(function(c){
+                return <button key={c.id} title={c.name} className={'miniChamp '+(enemies.some(function(e){return e.id===c.id}) ? 'active':'')} onClick={function(){toggleEnemy(c)}}>
+                  {championImage(c) ? <img src={championImage(c)} alt={c.name}/> : initials(c.name)}
+                </button>
               })}</div>
             </div>
 
@@ -330,7 +371,9 @@ function App() {
               ) : (
                 <div>
                   <div className="items" style={{marginTop:18}}>{build.items.map(function(item,index){
-                    return <div className="item" key={index}><div className="itemIcon">{index === 5 ? 'BOOT' : index+1}</div><b>{item}</b><small>{index < 2 ? 'CORE ITEM' : index === 5 ? 'BOOTS' : 'SITUATIONAL'}</small></div>
+                    return <div className="item" key={index}><div className="itemIcon">
+                        {itemImage(item) ? <img src={itemImage(item)} alt={item} loading="lazy" onError={function(e){e.currentTarget.style.display='none'}}/> : <span>{index === 5 ? 'BOOT' : index+1}</span>}
+                      </div><b>{item}</b><small>{index < 2 ? 'CORE ITEM' : index === 5 ? 'BOOTS' : 'SITUATIONAL'}</small></div>
                   })}</div>
                   <div className="metric" style={{marginTop:12}}>{Object.entries(build.stats).map(function(pair){
                     return <div className="metricBox" key={pair[0]}><span>{pair[0]}</span><strong>{pair[1]}</strong></div>

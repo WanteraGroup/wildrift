@@ -173,7 +173,8 @@ function normalizeChampion(raw,index){
   let role='Mid'
   if(lanes[0]==='Jungle')role='Jungle';else if(lanes[0]==='Top')role='Baron';else if(lanes[0]==='Support')role='Support';else if(lanes[0]==='AD')role='Dragon'
   const type=raw.type==='AP'?'AP':rolesRaw.indexOf('Tank')>=0?'Tank':'AD'
-  return {id:raw.id||'live-'+index,name:raw.name||raw.id||'Champion',role,type,tags:rolesRaw,c1:'#36d8ff',c2:'#172d46',live:true,difficulty:raw.difficult,damage:raw.damage,survive:raw.survive,utility:raw.utility,imageUrl:asset(raw.squarePortraitPath||raw.imagePath||'')}
+  const s=raw.stats||raw.baseStats||{}
+  return {id:raw.id||'live-'+index,name:raw.name||raw.id||'Champion',role,type,tags:rolesRaw,c1:'#36d8ff',c2:'#172d46',live:true,difficulty:raw.difficult,damage:raw.damage,survive:raw.survive,utility:raw.utility,stats:s,imageUrl:asset(raw.squarePortraitPath||raw.imagePath||'')}
 }
 function scoreItem(name,threats,style){
   const meta=itemMeta[name];if(!meta)return 0
@@ -185,6 +186,11 @@ function scoreItem(name,threats,style){
   return score
 }
 function readStore(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch{return fallback}}
+function valueFrom(obj,keys,fallback=0){for(const k of keys){const v=obj?.[k];if(v!==undefined&&v!==null&&v!==''&&!Number.isNaN(Number(v)))return Number(v)}return fallback}
+function championStats(c,lvl=15){const raw=c?.stats||{},fb=championFallbackStats[c?.name]||{hp:620,mp:300,ad:championBaseAD[c?.name]||60,armor:32,mr:32,as:.68,ms:335};const num=(keys,def)=>valueFrom(raw,keys,def);const hp=num(['health','hp','baseHealth'],fb.hp)+num(['healthPerLevel','hpPerLevel'],0)*(lvl-1);const mp=num(['mana','mp','baseMana'],fb.mp)+num(['manaPerLevel','mpPerLevel'],0)*(lvl-1);const ad=num(['attackDamage','ad','baseAttackDamage'],fb.ad)+num(['attackDamagePerLevel','adPerLevel'],0)*(lvl-1);const armor=num(['armor','baseArmor'],fb.armor)+num(['armorPerLevel'],0)*(lvl-1);const mr=num(['magicResist','mr','baseMagicResist'],fb.mr)+num(['magicResistPerLevel','mrPerLevel'],0)*(lvl-1);const as=num(['attackSpeed','baseAttackSpeed'],fb.as)+num(['attackSpeedPerLevel'],0)*(lvl-1)/100;const ms=num(['moveSpeed','movementSpeed','baseMoveSpeed'],fb.ms);return{level:lvl,health:Math.round(hp),mana:Math.round(mp),attackDamage:Math.round(ad),abilityPower:0,armor:Math.round(armor),magicResist:Math.round(mr),attackSpeed:Number(as.toFixed(2)),moveSpeed:Math.round(ms),source:Object.keys(raw).length?'LIVE DATA':'FORGE MODEL'}}
+function abilityList(c){return championAbilityData[c?.name]||[{key:'P',name:'PASSIVE',kind:'PASSIVE',effect:'A hős egyedi passzív mechanikája.',damage:'Képességfüggő.'},{key:'Q',name:'Q ABILITY',kind:'ABILITY',effect:'Elsődleges képesség.',damage:'Képességfüggő.'},{key:'W',name:'W ABILITY',kind:'UTILITY',effect:'Másodlagos képesség.',damage:'Képességfüggő.'},{key:'E',name:'E ABILITY',kind:'CONTROL',effect:'Kontroll vagy utility.',damage:'Képességfüggő.'},{key:'R',name:'ULTIMATE',kind:'ULTIMATE',effect:'Ultimate képesség.',damage:'Képességfüggő.'}]}
+function itemStatEntries(item){const s=itemCombatStats[item]||{};return Object.entries(s).filter(([k])=>statLabel[k]).map(([k,v])=>({label:statLabel[k],value:k==='as'||k.includes('Pct')?v+'%':v}))}
+function CatalogIcon({src,alt,label}){return <div className="catalogIcon">{src?<img src={src} alt={alt} loading="lazy"/>:<span>{label}</span>}</div>}
 function App(){
   const [tab,setTab]=useState('build'),[role,setRole]=useState('Mid'),[mine,setMine]=useState(champions[0]),[enemies,setEnemies]=useState([]),[playstyle,setPlaystyle]=useState('Burst'),[search,setSearch]=useState(''),[built,setBuilt]=useState(false),[selectedItem,setSelectedItem]=useState(null)
   const [liveChampions,setLiveChampions]=useState([]),[dataStatus,setDataStatus]=useState('loading')
@@ -214,6 +220,14 @@ function App(){
   },[mine,enemies,playstyle])
   const combat=useMemo(()=>calcBuildCombat(build.items,mine,level,targetArmor,targetMR),[build.items,mine,level,targetArmor,targetMR])
   const profileStats=useMemo(()=>{const total=matches.length,wins=matches.filter(m=>m.result==='WIN').length;return{total,wins,losses:total-wins,winrate:total?Math.round(wins/total*100):0,avgKda:total?(matches.reduce((s,m)=>s+m.kda,0)/total).toFixed(1):'0.0',avgDamage:total?(matches.reduce((s,m)=>s+m.damage,0)/total).toFixed(1):'0.0'}},[matches])
+  const currentChampionStats=useMemo(()=>championStats(mine,level),[mine,level])
+  const currentAbilities=useMemo(()=>abilityList(mine),[mine])
+  const allRunes=[...new Set(Object.values(runes).flat())]
+  const allItems=Object.keys(itemDetails)
+  const filteredCatalogRunes=allRunes.filter(x=>x.toLowerCase().includes(catalogSearch.toLowerCase().trim()))
+  const filteredCatalogSpells=Object.keys(spellDetails).filter(x=>x.toLowerCase().includes(catalogSearch.toLowerCase().trim()))
+  const filteredCatalogItems=allItems.filter(x=>x.toLowerCase().includes(catalogSearch.toLowerCase().trim()))
+  const filteredCatalogChampions=roster.filter(x=>x.name.toLowerCase().includes(catalogSearch.toLowerCase().trim())&&(role==='All'||x.role===role))
   function toggleEnemy(c){if(c.id===mine.id)return;const exists=enemies.some(e=>e.id===c.id);if(exists)setEnemies(enemies.filter(e=>e.id!==c.id));else if(enemies.length<5)setEnemies(enemies.concat(c))}
   function saveBuild(){setSaved(s=>s.concat({id:Date.now(),champion:mine.name,role,playstyle,items:build.items,score:build.score}))}
   function connectProfile(){window.location.href='/api/riot/login'}

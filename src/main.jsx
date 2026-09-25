@@ -67,6 +67,61 @@ const itemDetails={
   'Randuin’s Omen':{price:2700,stats:'Health · Armor',passive:'Crit-focused defensive profile that reduces the impact of repeated critical attacks.',build:'Armor + anti-crit path',when:'Against crit marksmen or multiple critical-strike threats.'},
   'Plated Steelcaps':{price:1000,stats:'Armor · Movement Speed',passive:'Basic-attack defense boot profile.',build:'Boot upgrade',when:'Against physical auto-attack pressure.'}
 }
+const itemCombatStats={
+  'Fiendhunter Bolts':{as:45,crit:25},
+  'Yun Tal Wildarrows':{ad:50,as:25,crit:0,critMax:25},
+  'Infinity Edge':{ad:75,crit:25,critDamage:2.3},
+  'Mortal Reminder':{ad:35,physPenPct:30},
+  'Guardian Angel':{ad:50,armor:40},
+  'Gluttonous Greaves':{lifesteal:8},
+  'Luden’s Echo':{ap:100,ah:10,mana:500,magicPenPct:7,luden:true},
+  'Infinity Orb':{ap:110,magicPenPct:7,magicPenFlat:15,orb:true},
+  'Rabadon’s Deathcap':{ap:130,magicPenPct:7,deathcap:true},
+  'Void Staff':{ap:95,magicPenPct:40},
+  'Zhonya’s Hourglass':{ap:75,armor:45},
+  'Mana Boots':{mana:350},
+  'Sunfire Aegis':{hp:400,armor:50,sunfire:true},
+  'Thornmail':{hp:200,armor:75},
+  'Amaranth’s Twinguard':{hp:300,armor:50,mr:50},
+  'Force of Nature':{hp:350,mr:50},
+  'Randuin’s Omen':{hp:350,armor:55},
+  'Plated Steelcaps':{armor:40}
+}
+const championBaseAD={Ahri:53,Zed:64,'Lee Sin':64,Darius:64,Malphite:62,Jinx:58,Thresh:56,Lux:54,Vayne:58,Morgana:60,Hwei:52,Sylas:64,'Rek’Sai':64,Yunara:58,'Cho’Gath':69,'Kai’Sa':59,'Xin Zhao':66}
+function mitigation(raw,resist){return raw*(100/Math.max(100,100+resist))}
+function calcBuildCombat(items,champion,level,targetArmor,targetMR){
+  const totals={ad:0,ap:0,as:0,crit:0,hp:0,armor:0,mr:0,physPenPct:0,physPenFlat:0,magicPenPct:0,magicPenFlat:0,lifesteal:0,ah:0,mana:0}
+  let hasIE=false,hasDeathcap=false,luden=false,sunfire=false,orb=false
+  items.forEach(name=>{
+    const s=itemCombatStats[name]||{}
+    totals.ad+=(s.ad||0);totals.ap+=(s.ap||0);totals.as+=(s.as||0);totals.crit+=(s.crit||0);totals.hp+=(s.hp||0)
+    totals.armor+=(s.armor||0);totals.mr+=(s.mr||0);totals.physPenPct=Math.max(totals.physPenPct,s.physPenPct||0)
+    totals.physPenFlat+=(s.physPenFlat||0);totals.magicPenPct=Math.max(totals.magicPenPct,s.magicPenPct||0)
+    totals.magicPenFlat+=(s.magicPenFlat||0);totals.lifesteal+=(s.lifesteal||0);totals.ah+=(s.ah||0);totals.mana+=(s.mana||0)
+    hasIE=hasIE||!!s.critDamage;hasDeathcap=hasDeathcap||!!s.deathcap;luden=luden||!!s.luden;sunfire=sunfire||!!s.sunfire;orb=orb||!!s.orb
+    if(s.critMax)totals.crit+=s.critMax
+  })
+  const ap=hasDeathcap?Math.round(totals.ap*1.3):totals.ap
+  const baseAD=championBaseAD[champion.name]||60
+  const totalAD=Math.round(baseAD+totals.ad+Math.max(0,level-1)*3.4)
+  const critDamage=hasIE?2.3:2
+  const avgAutoRaw=totalAD*(1+(Math.min(100,totals.crit)/100)*(critDamage-1))
+  const effectiveArmor=Math.max(0,targetArmor*(1-totals.physPenPct/100)-totals.physPenFlat)
+  const effectiveMR=Math.max(0,targetMR*(1-totals.magicPenPct/100)-totals.magicPenFlat)
+  const auto=mitigation(avgAutoRaw,effectiveArmor)
+  const attacksPerSecond=Math.min(3,0.625+totals.as/100)
+  const sustainedDps=auto*attacksPerSecond
+  const ludenRaw=luden?(75+0.08*ap):0
+  const ludenDamage=mitigation(ludenRaw,effectiveMR)
+  const sunfireRaw=sunfire?(20+0.015*totals.hp)*3:0
+  const sunfireDamage=mitigation(sunfireRaw,effectiveMR)
+  const itemProc=ludenDamage+sunfireDamage
+  const critAuto=mitigation(totalAD*critDamage,effectiveArmor)
+  const burst3s=auto*Math.max(1,Math.floor(attacksPerSecond*3))+itemProc
+  const spellRaw=100+ap
+  const spellDamage=mitigation(spellRaw,effectiveMR)
+  return {totals:{...totals,ap,crit:Math.min(100,totals.crit),totalAD},effectiveArmor,effectiveMR,critDamage,avgAutoRaw,auto,critAuto,attacksPerSecond,sustainedDps,ludenDamage,sunfireDamage,itemProc,burst3s,spellDamage,orb}
+}
 const runes={
   Burst:['Electrocute','Sudden Impact','Mark of the Weak','Eyeball Collector'],
   DPS:['Conqueror','Brutal','Coup de Grace','Legend: Alacrity'],
@@ -113,7 +168,7 @@ function App(){
   const [tab,setTab]=useState('build'),[role,setRole]=useState('Mid'),[mine,setMine]=useState(champions[0]),[enemies,setEnemies]=useState([]),[playstyle,setPlaystyle]=useState('Burst'),[search,setSearch]=useState(''),[built,setBuilt]=useState(false),[selectedItem,setSelectedItem]=useState(null)
   const [liveChampions,setLiveChampions]=useState([]),[dataStatus,setDataStatus]=useState('loading')
   const [saved,setSaved]=useState(()=>readStore('wrforge-saved',[])),[matches,setMatches]=useState(()=>readStore('wrforge-matches',matchSeed))
-  const [profile,setProfile]=useState(()=>readStore('wrforge-profile',{connected:false,region:'EU',riotId:'',rank:'Unranked',lastSync:null}))
+  const [profile,setProfile]=useState(()=>readStore('wrforge-profile',{connected:false,region:'EU',riotId:'',rank:'Unranked',lastSync:null})),[level,setLevel]=useState(15),[targetArmor,setTargetArmor]=useState(100),[targetMR,setTargetMR]=useState(80)
   const [connectMsg,setConnectMsg]=useState('')
   useEffect(()=>{let active=true;fetch(championDataUrl).then(r=>{if(!r.ok)throw Error();return r.json()}).then(data=>{if(!active)return;const n=Array.isArray(data)?data.filter(c=>c.is_wr!==false).map(normalizeChampion):[];if(n.length){setLiveChampions(n);setDataStatus('live')}else setDataStatus('fallback')}).catch(()=>active&&setDataStatus('fallback'));return()=>{active=false}},[])
   useEffect(()=>{try{localStorage.setItem('wrforge-saved',JSON.stringify(saved))}catch{}},[saved])
@@ -134,6 +189,7 @@ function App(){
     const stats={Damage:Math.min(99,(type==='AP'?91:89)+(playstyle==='Burst'?4:playstyle==='DPS'?3:0)+tankCount*2),DPS:Math.min(99,playstyle==='DPS'?95:(type==='AD'?86:82)+tankCount*3),Survival:Math.min(99,playstyle==='Tank'?94:(apCount>=2?82:72)+(assassin?6:0)),Utility:Math.min(99,playstyle==='Utility'?92+(hasHeal?2:0):(tankCount?74:68))}
     return {type,items:pool,runes:runes[playstyle],stats,score:Math.round(Object.values(stats).reduce((a,b)=>a+b,0)/4),threats:[apCount?apCount+' AP threat':'No major AP stack',tankCount?tankCount+' tank threat':'Low tank pressure',hasCrit?'Crit threat detected':'No major crit threat',assassin?'Assassin / burst threat':'No assassin threat']}
   },[mine,enemies,playstyle])
+  const combat=useMemo(()=>calcBuildCombat(build.items,mine,level,targetArmor,targetMR),[build.items,mine,level,targetArmor,targetMR])
   const profileStats=useMemo(()=>{const total=matches.length,wins=matches.filter(m=>m.result==='WIN').length;return{total,wins,losses:total-wins,winrate:total?Math.round(wins/total*100):0,avgKda:total?(matches.reduce((s,m)=>s+m.kda,0)/total).toFixed(1):'0.0',avgDamage:total?(matches.reduce((s,m)=>s+m.damage,0)/total).toFixed(1):'0.0'}},[matches])
   function toggleEnemy(c){if(c.id===mine.id)return;const exists=enemies.some(e=>e.id===c.id);if(exists)setEnemies(enemies.filter(e=>e.id!==c.id));else if(enemies.length<5)setEnemies(enemies.concat(c))}
   function saveBuild(){setSaved(s=>s.concat({id:Date.now(),champion:mine.name,role,playstyle,items:build.items,score:build.score}))}
@@ -166,7 +222,38 @@ function App(){
           <div className="field"><div className="label">PLAYSTYLE</div><div className="styles">{playstyles.map(s=><button key={s} className={'chip '+(playstyle===s?'active':'')} onClick={()=>setPlaystyle(s)}>{s}</button>)}</div></div>
         </aside>
         <section className="results"><div className="panel"><div className="buildHeader"><div><div className="kicker">02 / GENERATED BUILD</div><h2>{mine.name} · {role}</h2><span className="muted">{playstyle} profile · {enemies.length} enemy</span></div><div className="score">BUILD SCORE {build.score}</div></div>
-          {!built?<div className="emptyState">Állítsd be a meccset, majd nyomd meg a <b>BUILD MY GAME</b> gombot.</div>:<><div className="adviceBanner"><b>COACH ADVICE</b><span>{playstyle==='Burst'?'Keresd a rövid, kontrollált ablakokat; ne pazarold el az escape eszközöd az engage előtt.':playstyle==='DPS'?'Tartsd életben a DPS-ablakot: pozíció, folyamatos auto attack és célpontváltás a kulcs.':playstyle==='Tank'?'Te teremted meg a fight struktúráját. Ne csak sebzést tankolj: vedd el az ellenfél legfontosabb útvonalát.':playstyle==='Safe'?'A túlélés érték: farmolj stabilan, wardolj és csak akkor vállalj kockázatot, ha az előny mérhető.':'A csapat haszna az első: vision, peel, engage és cooldown-kezelés alapján játssz.'}</span></div><div className="items">{build.items.map((item,i)=><button className={'item '+(selectedItem===item?'selected':'')} key={i} onClick={()=>setSelectedItem(item)}><div className="itemIcon">{itemImage(item)?<img src={itemImage(item)} alt={item}/>:<span>{i===5?'BOOT':i+1}</span>}</div><b>{item}</b><small>{i<2?'CORE ITEM':i===5?'BOOTS':'SITUATIONAL'}</small></button>)}</div>{selectedItem&&itemDetails[selectedItem]&&<div className="itemDetail"><div><span className="kicker">ITEM INTELLIGENCE</span><h3>{selectedItem}</h3><p>{itemDetails[selectedItem].stats} · <b>{itemDetails[selectedItem].price} G</b></p></div><button className="ghost" onClick={()=>setSelectedItem(null)}>×</button><div className="itemDetailGrid"><div><span>PASSIVE</span><p>{itemDetails[selectedItem].passive}</p></div><div><span>BUILD PATH</span><p>{itemDetails[selectedItem].build}</p></div><div><span>WHEN TO BUY</span><p>{itemDetails[selectedItem].when}</p></div></div></div><div className="metric">{Object.entries(build.stats).map(([k,v])=><div className="metricBox" key={k}><span>{k}</span><strong>{v}</strong><div className="bar"><i style={{width:v+'%'}}/></div></div>)}</div></>}
+          {!built?<div className="emptyState">Állítsd be a meccset, majd nyomd meg a <b>BUILD MY GAME</b> gombot.</div>:<><div className="adviceBanner"><b>COACH ADVICE</b><span>{playstyle==='Burst'?'Keresd a rövid, kontrollált ablakokat; ne pazarold el az escape eszközöd az engage előtt.':playstyle==='DPS'?'Tartsd életben a DPS-ablakot: pozíció, folyamatos auto attack és célpontváltás a kulcs.':playstyle==='Tank'?'Te teremted meg a fight struktúráját. Ne csak sebzést tankolj: vedd el az ellenfél legfontosabb útvonalát.':playstyle==='Safe'?'A túlélés érték: farmolj stabilan, wardolj és csak akkor vállalj kockázatot, ha az előny mérhető.':'A csapat haszna az első: vision, peel, engage és cooldown-kezelés alapján játssz.'}</span></div><div className="items">{build.items.map((item,i)=><button className={'item '+(selectedItem===item?'selected':'')} key={i} onClick={()=>setSelectedItem(item)}><div className="itemIcon">{itemImage(item)?<img src={itemImage(item)} alt={item}/>:<span>{i===5?'BOOT':i+1}</span>}</div><b>{item}</b><small>{i<2?'CORE ITEM':i===5?'BOOTS':'SITUATIONAL'}</small></button>)}</div>{selectedItem&&itemDetails[selectedItem]&&<div className="itemDetail"><div><span className="kicker">ITEM INTELLIGENCE</span><h3>{selectedItem}</h3><p>{itemDetails[selectedItem].stats} · <b>{itemDetails[selectedItem].price} G</b></p></div><button className="ghost" onClick={()=>setSelectedItem(null)}>×</button><div className="itemDetailGrid"><div><span>PASSIVE</span><p>{itemDetails[selectedItem].passive}</p></div><div><span>BUILD PATH</span><p>{itemDetails[selectedItem].build}</p></div><div><span>WHEN TO BUY</span><p>{itemDetails[selectedItem].when}</p></div></div></div><div className="damagePanel">
+  <div className="damageHead">
+    <div><div className="kicker">COMBAT CALCULATOR</div><h3>{mine.name} · BUILD OUTPUT</h3><p>Az itemek statjaiból számolt elméleti sebzés. A champion képességek pontos sebzése skill-rang és találati helyzet nélkül nem kerül kitalálásra.</p></div>
+    <div className="damageControls">
+      <label>LVL <input type="number" min="1" max="18" value={level} onChange={e=>setLevel(Math.max(1,Math.min(18,Number(e.target.value)||1)))}/></label>
+      <label>TARGET ARMOR <input type="number" min="0" max="500" value={targetArmor} onChange={e=>setTargetArmor(Math.max(0,Number(e.target.value)||0))}/></label>
+      <label>TARGET MR <input type="number" min="0" max="500" value={targetMR} onChange={e=>setTargetMR(Math.max(0,Number(e.target.value)||0))}/></label>
+    </div>
+  </div>
+  <div className="damageMetrics">
+    <div className="damageMetric"><span>+ ATTACK DAMAGE</span><strong>{combat.totals.ad}</strong><small>item bonus</small></div>
+    <div className="damageMetric"><span>ABILITY POWER</span><strong>{combat.totals.ap}</strong><small>Deathcap passive included</small></div>
+    <div className="damageMetric"><span>CRIT</span><strong>{combat.totals.crit}%</strong><small>{combat.critDamage*100}% crit damage</small></div>
+    <div className="damageMetric"><span>ATTACK SPEED</span><strong>{combat.attacksPerSecond.toFixed(2)}</strong><small>attacks / sec estimate</small></div>
+    <div className="damageMetric"><span>PHYSICAL PEN</span><strong>{combat.totals.physPenPct}%{combat.totals.physPenFlat ? ' + '+combat.totals.physPenFlat : ''}</strong><small>vs {targetArmor} armor</small></div>
+    <div className="damageMetric"><span>MAGIC PEN</span><strong>{combat.totals.magicPenPct}%{combat.totals.magicPenFlat ? ' + '+combat.totals.magicPenFlat : ''}</strong><small>vs {targetMR} MR</small></div>
+  </div>
+  <div className="damageResults">
+    <div className="damageResult"><span>1 AUTO · AVG</span><strong>{Math.round(combat.auto)}</strong><small>post-mitigation physical</small></div>
+    <div className="damageResult crit"><span>1 CRIT HIT</span><strong>{Math.round(combat.critAuto)}</strong><small>post-mitigation</small></div>
+    <div className="damageResult"><span>SUSTAINED DPS</span><strong>{Math.round(combat.sustainedDps)}</strong><small>auto-based estimate</small></div>
+    <div className="damageResult"><span>3 SEC BURST</span><strong>{Math.round(combat.burst3s)}</strong><small>autos + item procs</small></div>
+  </div>
+  <div className="damageBreakdown">
+    <div><b>ITEM PROC DAMAGE</b><span>{Math.round(combat.itemProc)} / 3 sec</span></div>
+    <div><b>LUDEN PROC</b><span>{Math.round(combat.ludenDamage)}</span></div>
+    <div><b>SUNFIRE · 3 SEC</b><span>{Math.round(combat.sunfireDamage)}</span></div>
+    <div><b>GENERIC 100+AP SPELL</b><span>{Math.round(combat.spellDamage)}</span></div>
+  </div>
+  <div className="damageFoot">Ez a panel build-szintű kalkulátor: armor/MR mitigációt, critet, penet, attack speedet és ismert item-procokat számol. Nem helyettesíti a champion saját Q/W/E/R képletét.</div>
+</div>
+<div className="metric">{Object.entries(build.stats).map(([k,v])=><div className="metricBox" key={k}><span>{k}</span><strong>{v}</strong><div className="bar"><i style={{width:v+'%'}}/></div></div>)}</div></>}
         </div>
         {built&&<><div className="cols"><div className="panel"><div className="panelTitle"><h2>RUNES & SPELLS</h2></div>{build.runes.map((r,i)=><div className="rune" key={r}><div className="runeDot">{i+1}</div><b>{r}</b><span className="muted">recommended</span></div>)}<div className="spellRow"><span>FLASH</span><span>{playstyle==='Utility'?'EXHAUST':'IGNITE'}</span></div></div><div className="panel"><div className="panelTitle"><h2>COUNTER LOGIC</h2></div><p className="explain">Az engine threat tageket épít az enemy teamből, majd ezek alapján újrasúlyozza a situational slotokat.</p><div className="saved">{build.threats.map(t=><span className="chip active" key={t}>{t}</span>)}</div><p className="explain"><span className="good">✓</span> {playstyle} prioritás<br/><span className="good">✓</span> {enemies.length} ellenfél figyelembe véve</p></div></div>
         <div className="panel"><div className="panelTitle"><h2>SKILL ORDER & GAMEPLAN</h2><span className="muted">1 → 15</span></div><div className="skillRow">{['1','2','3','1','4','1','2','1','2','3','4','2','2','3','3'].map((x,i)=><div className="chip active" key={i}>{x}</div>)}</div><div className="tipsGrid"><div><b>EARLY GAME</b><p>Biztonságos wave-kezelés, matchup-specifikus trade és első power spike.</p></div><div><b>MID GAME</b><p>Objective előtt 30–45 mp vision, lane priority és cooldown check.</p></div><div><b>LATE GAME</b><p>A carry-k védelme és a fight első 3 másodperce dönti el a legtöbb helyzetet.</p></div></div></div>

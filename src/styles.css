@@ -882,3 +882,247 @@ button{transition:transform .18s ease,border-color .18s ease,background .18s eas
     transition-duration:.001ms!important;
   }
 }
+
+
+/* WR FORGE — HERO COMMAND DECK */
+.nav button{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  color:#9db0bf!important;
+  background:linear-gradient(180deg,rgba(10,20,31,.96),rgba(4,11,18,.98))!important;
+  border:1px solid rgba(88,151,181,.20)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+}
+.nav button:hover{
+  color:#e9fbff!important;
+  background:linear-gradient(180deg,rgba(13,39,54,.98),rgba(5,18,28,.98))!important;
+}
+.nav button.active{
+  color:#effcff!important;
+  background:radial-gradient(circle at 50% 0,rgba(56,220,255,.14),transparent 65%),linear-gradient(180deg,rgba(10,61,82,.98),rgba(5,26,39,.98))!important;
+  border-color:rgba(89,227,255,.75)!important;
+  box-shadow:0 0 28px rgba(35,202,255,.12),inset 0 -1px 0 rgba(79,226,255,.48)!important;
+}
+.hero{
+  position:relative;
+}
+.heroActions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:2;
+}
+.heroMicro{
+  color:#60798c;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:1.8px;
+}
+.heroMicro b{
+  color:#5ddff9;
+}
+.heroScan{
+  position:absolute;
+  inset:auto -12% 18% -12%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(85,228,255,.32),transparent);
+  box-shadow:0 0 16px rgba(63,214,255,.13);
+  animation:heroScanMove 6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes heroScanMove{
+  0%,100%{transform:translateY(0);opacity:.15}
+  50%{transform:translateY(90px);opacity:.75}
+}
+.heroTelemetry{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:27px;
+  color:#526a7d;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1.7px;
+  position:relative;
+  z-index:2;
+}
+.heroTelemetry i{
+  width:4px;height:4px;border-radius:50%;
+  background:#4adcf8;
+  box-shadow:0 0 10px rgba(74,220,248,.85);
+}
+.patch{
+  justify-content:space-between;
+  align-items:stretch;
+  min-height:250px;
+}
+.patchTop{
+  position:relative;
+  z-index:3;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.patchStatus{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:5px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  color:#5d7488;
+}
+.patchStatus .good{
+  color:#50dfaa;
+}
+.patchCore{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin:18px 0 13px;
+}
+.patchCoreRing{
+  position:relative;
+  width:104px;
+  height:104px;
+  flex:0 0 104px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,rgba(68,226,255,.12) 0 26%,transparent 27%),
+    conic-gradient(from 20deg,rgba(91,232,255,.9),rgba(105,110,255,.18),rgba(91,232,255,.08),rgba(91,232,255,.9));
+  box-shadow:0 0 34px rgba(54,211,255,.10),inset 0 0 28px rgba(50,207,255,.08);
+  animation:patchSpin 18s linear infinite;
+}
+.patchCoreRing:before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:1px solid rgba(113,236,255,.18);
+  background:radial-gradient(circle at 50% 35%,rgba(81,223,255,.12),rgba(3,10,16,.95) 67%);
+}
+.patchCoreRing:after{
+  content:"";
+  position:absolute;
+  inset:20px;
+  border-radius:50%;
+  border:1px dashed rgba(98,226,255,.18);
+  animation:patchSpinReverse 11s linear infinite;
+}
+.patchCoreRing span{
+  position:relative;
+  z-index:2;
+  font-family:Rajdhani,sans-serif;
+  font-size:27px;
+  font-weight:800;
+  color:#c9f8ff;
+  text-shadow:0 0 18px rgba(87,225,255,.3);
+}
+@keyframes patchSpin{to{transform:rotate(360deg)}}
+@keyframes patchSpinReverse{to{transform:rotate(-360deg)}}
+.patchCore small,
+.patchCore span{
+  display:block;
+  color:#6d8598;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1.8px;
+}
+.patchCore strong{
+  display:block;
+  margin:2px 0 1px;
+  font-family:Rajdhani,sans-serif;
+  font-size:63px;
+  line-height:.9;
+  color:#f3cf75;
+  text-shadow:0 0 28px rgba(242,207,120,.13);
+}
+.patchRail{
+  position:relative;
+  z-index:3;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:auto;
+}
+.patchRail div{
+  border:1px solid rgba(81,141,167,.14);
+  border-radius:9px;
+  padding:8px 9px;
+  background:rgba(3,10,17,.46);
+}
+.patchRail span,.patchRail b{
+  display:block;
+}
+.patchRail span{
+  color:#607789;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+.patchRail b{
+  margin-top:4px;
+  color:#d9f5ff;
+  font-size:9px;
+  letter-spacing:.4px;
+}
+.patchGridArt{
+  position:absolute;
+  inset:17% -12% 4% 26%;
+  z-index:1;
+  opacity:.45;
+  background:
+    linear-gradient(rgba(67,210,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(67,210,255,.045) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(circle at 65% 48%,black 0 35%,transparent 76%);
+  transform:perspective(420px) rotateX(58deg) rotateZ(-8deg);
+}
+.patchOrb{
+  position:absolute;
+  z-index:1;
+  border-radius:50%;
+  pointer-events:none;
+}
+.patchOrbA{
+  width:260px;height:260px;
+  right:-88px;top:-74px;
+  border:1px solid rgba(74,219,255,.12);
+  box-shadow:0 0 80px rgba(33,187,250,.08),inset 0 0 60px rgba(61,211,255,.04);
+  animation:orbFloat 9s ease-in-out infinite;
+}
+.patchOrbA:before{
+  content:"";
+  position:absolute;
+  inset:16px;
+  border-radius:50%;
+  border:1px dashed rgba(97,230,255,.09);
+}
+.patchOrbB{
+  width:150px;height:150px;
+  left:-72px;bottom:-78px;
+  border:1px solid rgba(129,120,255,.08);
+  box-shadow:0 0 60px rgba(77,70,200,.07);
+  animation:orbFloat 12s ease-in-out infinite reverse;
+}
+@keyframes orbFloat{
+  50%{transform:translate3d(0,9px,0) scale(1.025)}
+}
+@media(max-width:760px){
+  .heroTelemetry{margin-top:20px;flex-wrap:wrap}
+  .patchTop{gap:7px}
+  .patchCore{gap:12px}
+  .patchCoreRing{width:78px;height:78px;flex-basis:78px}
+  .patchCoreRing span{font-size:21px}
+  .patchCore strong{font-size:50px}
+  .patchRail{grid-template-columns:1fr}
+  .patchRail div{padding:7px 8px}
+}

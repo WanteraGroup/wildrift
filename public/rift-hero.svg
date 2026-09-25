@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#02060c"/><stop offset=".45" stop-color="#071b2c"/><stop offset="1" stop-color="#03070e"/></linearGradient>
+  <radialGradient id="sky" cx=".72" cy=".18" r=".6"><stop stop-color="#37d9ff" stop-opacity=".30"/><stop offset=".45" stop-color="#1c66b4" stop-opacity=".09"/><stop offset="1" stop-opacity="0"/></radialGradient>
+  <radialGradient id="core"><stop stop-color="#b8fbff" stop-opacity=".95"/><stop offset=".18" stop-color="#50e5ff" stop-opacity=".85"/><stop offset=".55" stop-color="#0d93d0" stop-opacity=".18"/><stop offset="1" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a2"/><stop offset=".5" stop-color="#e9bd5c"/><stop offset="1" stop-color="#835919"/></linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6cf3ff" stop-opacity=".95"/><stop offset="1" stop-color="#0673bd" stop-opacity=".10"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="26"/></filter>
+  <filter id="shadow"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#000" flood-opacity=".55"/></filter>
+  <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#4adfff" stroke-opacity=".055"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<rect width="1600" height="900" fill="url(#grid)"/>
+<g opacity=".28" filter="url(#soft)">
+  <ellipse cx="300" cy="570" rx="400" ry="150" fill="#147fc0"/>
+  <ellipse cx="1250" cy="630" rx="480" ry="180" fill="#3252d6"/>
+</g>
+<!-- distant floating ruins -->
+<g fill="#07131f" stroke="#27607a" stroke-opacity=".5">
+  <path d="M210 310l65-40 72 26-10 68-68 29-58-32z"/>
+  <path d="M430 225l45-29 56 17 7 58-44 25-57-22z"/>
+  <path d="M1190 240l54-37 65 18 8 68-57 28-60-22z"/>
+  <path d="M1380 340l62-44 75 21 0 66-66 32-71-26z"/>
+</g>
+<g fill="#0b1c2a" stroke="url(#gold)" stroke-opacity=".32" filter="url(#shadow)">
+  <path d="M55 610V390l90-75 90 75v220z"/>
+  <path d="M1360 630V405l80-63 90 63v225z"/>
+  <path d="M280 690l170-155 160 155-38 75H320z"/>
+  <path d="M1110 690l150-165 180 165-40 72H1140z"/>
+</g>
+<!-- central floating citadel -->
+<g transform="translate(930 120)" filter="url(#shadow)">
+  <path d="M-175 315L0 220 185 315 140 395 0 450-145 395z" fill="#0a1623" stroke="#3c94ac" stroke-opacity=".55"/>
+  <path d="M-115 302V180l115-75 115 75v122L0 355z" fill="#0e2535" stroke="#7fefff" stroke-opacity=".38"/>
+  <path d="M-68 170V68h45V20h46v48h45v102L0 213z" fill="#102e42" stroke="url(#gold)" stroke-opacity=".7"/>
+  <path d="M0 10V-70" stroke="#74efff" stroke-width="8" filter="url(#glow)"/>
+  <circle cx="0" cy="-82" r="68" fill="url(#core)"/>
+  <circle cx="0" cy="-82" r="24" fill="#d6fdff" filter="url(#glow)"/>
+  <path d="M0 -82C65 12 92 105 75 210M0 -82C-65 12-92 105-75 210" fill="none" stroke="#53e4ff" stroke-opacity=".45" stroke-width="4"/>
+</g>
+<!-- energy river -->
+<path d="M1410 760C1220 720 1180 650 1015 632C870 616 800 675 628 660C470 646 385 700 205 746" fill="none" stroke="#0ea5dc" stroke-opacity=".22" stroke-width="55" filter="url(#soft)"/>
+<path d="M1410 760C1220 720 1180 650 1015 632C870 616 800 675 628 660C470 646 385 700 205 746" fill="none" stroke="url(#water)" stroke-width="16" filter="url(#glow)"/>
+<path d="M1410 760C1220 720 1180 650 1015 632C870 616 800 675 628 660C470 646 385 700 205 746" fill="none" stroke="#c2fbff" stroke-opacity=".45" stroke-width="2"/>
+<!-- foreground arena -->
+<path d="M0 900V705L210 640 430 675 620 630 820 670 1010 615 1230 650 1430 605 1600 680V900z" fill="#040b13" stroke="#214c62" stroke-width="3"/>
+<g opacity=".85" fill="none" stroke="url(#gold)">
+  <path d="M120 815C350 735 515 752 770 820S1195 895 1500 770" stroke-width="3"/>
+  <path d="M230 900C400 778 600 748 800 800S1160 876 1360 712" stroke-width="2"/>
+  <path d="M390 900C520 820 690 795 875 830S1120 860 1250 765" stroke-width="1.5"/>
+</g>
+<g fill="#10283a" stroke="#54dbfb" stroke-opacity=".25">
+  <circle cx="490" cy="780" r="11"/><circle cx="560" cy="800" r="7"/><circle cx="1085" cy="752" r="10"/><circle cx="1160" cy="792" r="6"/>
+</g>
+<!-- particles -->
+<g fill="#b7f7ff">
+  <circle cx="260" cy="185" r="2"/><circle cx="350" cy="420" r="3"/><circle cx="690" cy="310" r="2"/><circle cx="1070" cy="390" r="3"/><circle cx="1320" cy="185" r="2"/><circle cx="1450" cy="520" r="3"/>
+</g>
+<rect width="1600" height="900" fill="#02060c" fill-opacity=".26"/>
+</svg>

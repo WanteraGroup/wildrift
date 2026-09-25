@@ -210,7 +210,42 @@ function App(){
     <header className="top"><div className="brand"><div className="brandmark">WR</div><div><b>WR FORGE</b><small>WILD RIFT BUILD & MATCH INTELLIGENCE</small></div></div><div className="actions"><div className="select">PATCH 7.3</div><button className="ghost" onClick={reset}>↻ Reset</button></div></header>
     <nav className="nav"><button className={tab==='build'?'active':''} onClick={()=>setTab('build')}>⚔ BUILD FORGE</button><button className={tab==='matches'?'active':''} onClick={()=>setTab('matches')}>◈ MATCH MONITOR</button><button className={tab==='profile'?'active':''} onClick={()=>setTab('profile')}>◎ MY PROFILE</button><button className={tab==='learn'?'active':''} onClick={()=>setTab('learn')}>▣ LEARN & IMPROVE</button></nav>
     <main className="container">
-      <section className="hero"><div className="heroCard"><div className="kicker">MATCH-ADAPTIVE BUILD ENGINE</div><h1>BUILD YOUR<br/><span>GAME.</span></h1><p>Buildet készítünk az ellenfél-kompozíció, a szerep, a playstyle és a matchup alapján. Kezdőtől a profi elemzésig.</p><button className="forgeBtn" onClick={()=>{setTab('build');setBuilt(true)}}>⚔ BUILD MY GAME →</button></div><div className="heroCard patch"><div><div className="kicker">DATA & PROFILE LAYER</div><div className="note">{dataStatus==='live'?<span className="good">● CHAMPION DATA ONLINE</span>:dataStatus==='fallback'?<span className="danger">● LOCAL FALLBACK</span>:<span>● DATA LOADING...</span>}<br/>{profile.connected?<span className="good">● RIOT PROFILE CONNECTED</span>:<span>○ RIOT PROFILE NOT CONNECTED</span>}<br/>Builds · matches · improvement</div></div><strong>7.3</strong></div></section>
+      <section className="hero">
+  <div className="heroCard">
+    <div className="heroScan" aria-hidden="true"></div>
+    <div className="kicker">MATCH-ADAPTIVE BUILD ENGINE</div>
+    <h1>BUILD YOUR<br/><span>GAME.</span></h1>
+    <p>Buildet készítünk az ellenfél-kompozíció, a szerep, a playstyle és a matchup alapján. Kezdőtől a profi elemzésig.</p>
+    <div className="heroActions">
+      <button className="forgeBtn" onClick={()=>{setTab('build');setBuilt(true)}}>⚔ BUILD MY GAME →</button>
+      <span className="heroMicro">MATCH READY · <b>01</b></span>
+    </div>
+    <div className="heroTelemetry" aria-hidden="true">
+      <span>ADAPTIVE ENGINE</span><i></i><span>THREAT SCAN</span><i></i><span>BUILD OUTPUT</span>
+    </div>
+  </div>
+  <div className="heroCard patch">
+    <div className="patchOrb patchOrbA" aria-hidden="true"></div>
+    <div className="patchOrb patchOrbB" aria-hidden="true"></div>
+    <div className="patchGridArt" aria-hidden="true"></div>
+    <div className="patchTop">
+      <div className="kicker">DATA & PROFILE LAYER</div>
+      <div className="patchStatus">
+        <span className={dataStatus==='live'?'good':''}>{dataStatus==='live'?'● ONLINE':'○ '+(dataStatus==='fallback'?'LOCAL FALLBACK':'DATA LOADING')}</span>
+        <span className={profile.connected?'good':''}>{profile.connected?'● RIOT PROFILE':'○ RIOT PROFILE'}</span>
+      </div>
+    </div>
+    <div className="patchCore">
+      <div className="patchCoreRing"><span>WR</span></div>
+      <div><small>CURRENT PATCH</small><strong>7.3</strong><span>BUILD · MATCH · IMPROVE</span></div>
+    </div>
+    <div className="patchRail">
+      <div><span>CHAMPION DATA</span><b>{dataStatus==='live'?'LIVE':'READY'}</b></div>
+      <div><span>BUILD ENGINE</span><b>ADAPTIVE</b></div>
+      <div><span>PROFILE LAYER</span><b>{profile.connected?'CONNECTED':'CONNECTABLE'}</b></div>
+    </div>
+  </div>
+</section>
 
       {tab==='build'&&<section className="layout">
         <aside className="panel"><div className="panelTitle"><h2>01 / MATCH SETUP</h2><span className="muted">{enemies.length}/5 ENEMY</span></div>

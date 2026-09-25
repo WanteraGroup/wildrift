@@ -1178,3 +1178,168 @@ button{transition:transform .18s ease,border-color .18s ease,background .18s eas
     background-position:62% center;
   }
 }
+
+
+/* WR FORGE — DATA LIBRARY SYSTEM */
+.catalogPage{display:grid;gap:16px}
+.catalogHeader{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+  padding:4px 0 2px;
+}
+.catalogHeader h2{
+  margin:8px 0 0;font-family:Rajdhani,sans-serif;font-size:34px;letter-spacing:1px;text-transform:uppercase;
+}
+.catalogHeader p{margin:6px 0 0;color:#8198aa;font-size:12px;line-height:1.55;max-width:720px}
+.catalogSearch{width:min(360px,100%);min-height:44px}
+.catalogLayout{
+  display:grid;grid-template-columns:360px 1fr;gap:16px;min-height:600px;
+}
+.catalogList{
+  max-height:690px;overflow:auto;padding:10px;
+}
+.catalogRow{
+  width:100%;display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:11px;
+  border:1px solid rgba(79,135,161,.16);border-radius:12px;padding:8px;margin-bottom:7px;
+  color:#edf6ff;text-align:left;cursor:pointer;
+  background:linear-gradient(180deg,rgba(9,19,29,.98),rgba(4,10,16,.98));
+}
+.catalogRow:hover{
+  transform:translateX(2px);border-color:rgba(67,214,248,.44);
+  box-shadow:0 8px 22px rgba(0,0,0,.24),0 0 18px rgba(37,196,242,.05);
+}
+.catalogRow.active{
+  border-color:rgba(104,231,255,.72);
+  background:radial-gradient(circle at 0 50%,rgba(43,216,255,.13),transparent 42%),linear-gradient(180deg,rgba(11,44,60,.98),rgba(4,16,25,.98));
+  box-shadow:0 0 0 1px rgba(71,220,255,.13),0 0 24px rgba(37,201,248,.10);
+}
+.catalogRow span{min-width:0}
+.catalogRow b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catalogRow small{display:block;margin-top:3px;color:#6f869a;font-size:8px;letter-spacing:.7px}
+.catalogRow em{font-style:normal;color:#8aa0b1;font-size:9px;font-weight:800}
+.catalogIcon{
+  width:52px;height:52px;border-radius:11px;overflow:hidden;display:grid;place-items:center;flex:none;
+  border:1px solid rgba(94,177,207,.28);
+  background:radial-gradient(circle at 35% 25%,rgba(76,228,255,.12),transparent 45%),linear-gradient(145deg,#142a3a,#07111a);
+  box-shadow:0 7px 18px rgba(0,0,0,.33);
+}
+.catalogIcon img{width:100%;height:100%;object-fit:cover;display:block}
+.catalogIcon span{font-family:Rajdhani,sans-serif;font-weight:800;color:#62e6ff;font-size:20px}
+.catalogDetail{
+  position:relative;overflow:hidden;padding:24px;
+  background:
+    radial-gradient(circle at 100% 0,rgba(52,218,255,.08),transparent 35%),
+    radial-gradient(circle at 0 100%,rgba(115,86,255,.06),transparent 32%),
+    linear-gradient(180deg,rgba(8,20,31,.98),rgba(3,10,16,.99));
+}
+.catalogDetail:before{
+  content:"";position:absolute;inset:16px;border:1px solid rgba(74,209,247,.05);border-radius:14px;pointer-events:none;
+}
+.detailEyebrow{
+  color:#61e6ff;font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+}
+.detailTitleRow{
+  position:relative;z-index:1;display:flex;align-items:center;gap:16px;margin-top:12px;
+}
+.detailTitleRow .catalogIcon{width:78px;height:78px;border-radius:15px}
+.detailTitleRow h2{font-family:Rajdhani,sans-serif;font-size:31px;margin:0 0 3px;letter-spacing:.7px}
+.detailTitleRow span{color:#7c93a7;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.detailStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;position:relative;z-index:1}
+.detailStats>div,.itemStatGrid>div{
+  border:1px solid rgba(84,141,166,.14);border-radius:10px;padding:11px;background:rgba(5,13,21,.74);
+}
+.detailStats span,.itemStatGrid span{
+  display:block;color:#678095;font-size:8px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;
+}
+.detailStats b,.itemStatGrid b{display:block;color:#e7f7ff;font-size:11px;margin-top:5px}
+.longDetail{
+  position:relative;z-index:1;margin-top:10px;border:1px solid rgba(79,138,166,.13);border-radius:12px;padding:14px;
+  background:linear-gradient(180deg,rgba(6,17,27,.9),rgba(3,10,16,.96));
+}
+.longDetail span{color:#5fdff8;font-size:8px;font-weight:900;letter-spacing:1.7px}
+.longDetail p{margin:8px 0 0;color:#a7bac9;font-size:12px;line-height:1.62}
+.itemStatGrid{
+  position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px;
+}
+.championDetail{display:grid;align-content:start}
+.champHero{
+  position:relative;display:grid;grid-template-columns:84px 1fr auto;gap:15px;align-items:center;
+}
+.champHero>.catalogIcon{width:84px;height:84px;border-radius:16px}
+.champHero h2{font-family:Rajdhani,sans-serif;font-size:38px;margin:2px 0}
+.champHero p{margin:0;color:#8097a9;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.champLevel{display:grid;gap:6px;justify-items:end}
+.champLevel span{color:#66e4ff;font-size:9px;font-weight:900;letter-spacing:1.2px}
+.champLevel input{width:180px;accent-color:#39d9ff}
+.statGrid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;
+}
+.statCard{
+  border:1px solid rgba(81,138,163,.15);border-radius:11px;padding:11px;
+  background:linear-gradient(180deg,rgba(8,18,28,.97),rgba(4,10,16,.99));
+}
+.statCard span{display:block;color:#7890a3;font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:900}
+.statCard strong{display:block;margin-top:5px;font-family:Rajdhani,sans-serif;font-size:24px;color:#effbff}
+.statCard small{display:block;margin-top:3px;color:#4e687d;font-size:7px;letter-spacing:.8px}
+.abilityGrid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px;
+}
+.abilityCard{
+  position:relative;text-align:left;cursor:pointer;padding:10px;border-radius:11px;
+  border:1px solid rgba(77,134,160,.15);
+  background:linear-gradient(180deg,rgba(8,18,28,.98),rgba(3,10,16,.99));
+  color:#e7f8ff;
+}
+.abilityCard:hover,.abilityCard.active{
+  border-color:rgba(84,225,252,.55);
+  box-shadow:0 0 20px rgba(34,200,246,.08),inset 0 0 18px rgba(34,200,246,.035);
+}
+.abilityCard>span{
+  display:grid;place-items:center;width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,#321268,#13051f);border:1px solid rgba(189,101,255,.42);
+  color:#e2bcff;font-family:Rajdhani;font-weight:800;font-size:13px;
+}
+.abilityCard b{display:block;margin-top:8px;font-size:9px;line-height:1.25}
+.abilityCard small{display:block;margin-top:4px;color:#627b8e;font-size:7px;letter-spacing:1px}
+.abilityDetail{
+  display:grid;grid-template-columns:54px 1fr;gap:13px;align-items:start;margin-top:10px;
+  border:1px solid rgba(145,77,220,.22);border-radius:13px;padding:15px;
+  background:radial-gradient(circle at 0 50%,rgba(131,77,255,.12),transparent 30%),linear-gradient(180deg,rgba(20,10,31,.88),rgba(7,5,13,.96));
+}
+.abilityBadge{
+  width:54px;height:54px;border-radius:13px;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#a055ff,#2a0b49 72%);border:1px solid #bd72ff88;
+  color:#fff;font-family:Rajdhani,sans-serif;font-size:22px;font-weight:900;box-shadow:0 0 25px rgba(153,69,255,.16)
+}
+.abilityDetail h3{font-family:Rajdhani,sans-serif;font-size:23px;margin:3px 0}
+.abilityDetail p{margin:5px 0;color:#a6b6c5;font-size:12px;line-height:1.6}
+.abilityDamage{
+  display:inline-flex;gap:10px;align-items:center;margin-top:7px;padding:8px 10px;border-radius:9px;
+  background:rgba(79,215,249,.05);border:1px solid rgba(79,215,249,.16)
+}
+.abilityDamage b{color:#68e6ff;font-size:8px;letter-spacing:1px}
+.abilityDamage span{color:#e5f8ff;font-size:10px}
+@media(max-width:1000px){
+  .catalogLayout{grid-template-columns:1fr}
+  .catalogList{max-height:300px}
+  .catalogHeader{align-items:start;flex-direction:column}
+  .catalogSearch{width:100%}
+  .champHero{grid-template-columns:72px 1fr}
+  .champLevel{grid-column:1/-1;justify-items:start}
+  .statGrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){
+  .catalogHeader h2{font-size:27px}
+  .catalogLayout{gap:12px}
+  .catalogDetail{padding:16px}
+  .detailTitleRow .catalogIcon{width:64px;height:64px}
+  .detailTitleRow h2{font-size:25px}
+  .detailStats{grid-template-columns:1fr 1fr}
+  .itemStatGrid{grid-template-columns:1fr 1fr}
+  .abilityGrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .statGrid{grid-template-columns:1fr 1fr}
+  .abilityGrid{grid-template-columns:1fr 1fr}
+  .champHero>.catalogIcon{width:64px;height:64px}
+  .champHero h2{font-size:29px}
+}

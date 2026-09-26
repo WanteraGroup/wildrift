@@ -1343,3 +1343,116 @@ button{transition:transform .18s ease,border-color .18s ease,background .18s eas
   .champHero>.catalogIcon{width:64px;height:64px}
   .champHero h2{font-size:29px}
 }
+
+
+/* WR FORGE — GRAPHICS PATCH 2026-09-26 */
+:root{
+  --forge-cyan:#55e7ff;
+  --forge-blue:#2f9fff;
+  --forge-gold:#f2d078;
+  --forge-bg:#030910;
+  --forge-panel:rgba(7,18,29,.96);
+}
+body{
+  background:
+    radial-gradient(circle at 50% -10%,rgba(28,126,177,.12),transparent 34%),
+    radial-gradient(circle at 90% 45%,rgba(54,76,180,.07),transparent 28%),
+    #02070c;
+}
+.appShell,.container{
+  position:relative;
+}
+.panel,.heroCard,.patch,.catalogDetail{
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.panel{
+  border-color:rgba(82,167,198,.20);
+  box-shadow:0 18px 44px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.018);
+}
+.panel:hover{
+  border-color:rgba(83,211,245,.28);
+}
+.nav{
+  position:relative;
+}
+.nav:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(72,220,255,.38),transparent);
+  pointer-events:none;
+}
+.nav button{
+  min-height:38px;
+  letter-spacing:.8px;
+}
+.nav button.active:before{
+  content:"";
+  position:absolute;
+  left:18%;right:18%;bottom:-13px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--forge-cyan),transparent);
+  box-shadow:0 0 14px rgba(85,231,255,.65);
+}
+.heroCard,.patch{
+  overflow:hidden;
+}
+.heroCard:before,.patch:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(115deg,transparent 0 47%,rgba(85,231,255,.035) 48%,transparent 49%),
+    linear-gradient(0deg,rgba(1,6,10,.55),transparent 42%);
+  pointer-events:none;
+}
+.champ,.catalogRow,.item,.runeCard,.spellCard{
+  position:relative;
+  overflow:hidden;
+}
+.champ:after,.catalogRow:after,.item:after,.runeCard:after,.spellCard:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 25%,rgba(116,233,255,.075) 48%,transparent 70%);
+  transform:translateX(-120%);
+  transition:transform .55s ease;
+  pointer-events:none;
+}
+.champ:hover:after,.catalogRow:hover:after,.item:hover:after,.runeCard:hover:after,.spellCard:hover:after{
+  transform:translateX(120%);
+}
+.itemIcon,.runeIcon,.spellCard img{
+  box-shadow:0 0 0 1px rgba(101,218,247,.10),0 8px 18px rgba(0,0,0,.28);
+}
+.item.selected{
+  border-color:rgba(242,208,120,.65)!important;
+  box-shadow:0 0 24px rgba(242,208,120,.08),inset 0 0 20px rgba(242,208,120,.025);
+}
+.assetFallback{
+  background:
+    radial-gradient(circle at 50% 35%,rgba(85,231,255,.14),transparent 42%),
+    linear-gradient(145deg,#122c3d,#050c13);
+}
+.assetFallback span{
+  color:#b9f5ff;
+  text-shadow:0 0 14px rgba(85,231,255,.22);
+}
+.runeCard,.spellCard{
+  border-color:rgba(88,153,181,.18);
+  background:linear-gradient(180deg,rgba(8,20,31,.98),rgba(4,10,16,.99));
+}
+.runeCard:hover,.spellCard:hover{
+  border-color:rgba(85,231,255,.38);
+  transform:translateY(-1px);
+}
+.damageResult{
+  border-color:rgba(85,231,255,.18);
+}
+.good{
+  text-shadow:0 0 12px rgba(80,223,170,.18);
+}
+@media(max-width:760px){
+  .nav button.active:before{bottom:-8px}
+  .panel{box-shadow:0 12px 28px rgba(0,0,0,.25)}
+}
